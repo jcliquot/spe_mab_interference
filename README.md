@@ -7,7 +7,24 @@
 > 📄 [Publication — *Characterization of the migration profile of 36 Therapeutic Monoclonal Antibodies in Serum Protein Electrophoresis and Immunofixation*](#)
 
 ---
+# Abstract
+## Background
 
+Therapeutic monoclonal antibodies (t-mAbs) are widely used in oncology, hematology, and immune-mediated diseases. Several t-mAbs are visualisable in serum protein electrophoresis (SPEP) and immunofixation electrophoresis (IF), potentially leading to misinterpretation of monoclonal gammopathies. However, the migration profile of these t-mAbs remains poorly described, even though many t-mAbs are widely used or have recently been approved.
+
+### Methods
+
+T-mAbs were tested in SPEP and IF using **Sebia Capillarys3** and **Hydrasis** systems respectively. Normal human sera — defined by the absence of abnormalities on SPEP — were spiked with t-mAbs at their highest reported therapeutic concentrations (*C*<sub>max</sub>) based on product characteristics and published data. Raw electropherogram data were exported and processed using a **reproducible Python-based workflow** to harmonize axes and enable standardized profile overlay and visualization. IF results were independently evaluated by four clinical chemists. Antibodies undetectable by SPEP or IF at *C*<sub>max</sub> were additionally spiked at **500 mg/L** to determine their electrophoretic migration profiles.
+
+### Results
+
+Thirty-six t-mAbs were analyzed. No interference was observed for t-mAbs at concentrations **below 110 mg/L**. All t-mAbs tested at *C*<sub>max</sub> above 110 mg/L or at 500 mg/L were detectable by SPEP and IF. Migration patterns were confirmed for previously described antibodies and newly characterized for several agents, including bispecific and drug-conjugated antibodies. The electropherogram overlay approach enabled refined attribution of migration zones, particularly within the **alpha** and **beta** regions.
+
+### Conclusions
+
+This study expanded current knowledge of t-mAb interference with SPEP and IF and provided standardized electrophoretic profiles for both established and emerging therapies. These data offer practical guidance for clinical laboratories and highlight the need for continued characterization as novel t-mAbs enter routine practice.
+
+---
 A lightweight Python/JavaScript toolkit to decode, validate, and visualise raw hexadecimal capillary electrophoresis (SPE) curves produced by compatible analysers.
 
 ## Features
@@ -23,8 +40,7 @@ A lightweight Python/JavaScript toolkit to decode, validate, and visualise raw h
 
 ```
 ├── spe_webapp.html        # Standalone interactive web app (no server needed)
-├── serum_electrophoresis.py   # Core Python module
-├── server.py              # Optional Flask backend for Matplotlib PNG rendering
+├── serum_electrophoresis.py   # Core Python module            
 ├── README.md
 └── LICENSE
 ```
