@@ -6,140 +6,93 @@
   <title>Serum Protein Electrophoresis</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f9;
-      color: #1a1a2e;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px;
-    }
-    header { width: 100%; max-width: 960px; margin-bottom: 20px; }
-    header h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
-    header p { font-size: 0.9rem; color: #666; margin-top: 4px; }
-    .upload-card {
-      background: white; border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      padding: 20px 24px; width: 100%; max-width: 960px; margin-bottom: 20px;
-    }
-    .upload-card label { display:block; font-size:0.85rem; font-weight:600; color:#444; margin-bottom:6px; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:#f4f6f9; color:#1a1a2e;
+           min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px; }
+    header { width:100%; max-width:960px; margin-bottom:20px; }
+    header h1 { font-size:1.5rem; font-weight:700; }
+    header p  { font-size:0.9rem; color:#666; margin-top:4px; }
+    .card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08);
+            padding:20px 24px; width:100%; max-width:960px; margin-bottom:20px; }
+    .card label { display:block; font-size:0.85rem; font-weight:600; color:#444; margin-bottom:6px; }
     .hex-row { display:flex; gap:10px; align-items:center; }
-    textarea#hexInput {
-      flex:1; height:56px; padding:10px 12px;
-      border:1.5px solid #dde1e7; border-radius:8px;
-      font-family:monospace; font-size:0.78rem; resize:none;
-      color:#222; background:#fafafa; transition:border-color 0.2s;
-    }
+    textarea#hexInput { flex:1; height:56px; padding:10px 12px; border:1.5px solid #dde1e7;
+      border-radius:8px; font-family:monospace; font-size:0.78rem; resize:none; color:#222; background:#fafafa; }
     textarea#hexInput:focus { outline:none; border-color:#4361ee; }
-    button#analyzeBtn {
-      padding:14px 24px; background:#4361ee; color:white;
-      border:none; border-radius:8px; font-size:0.9rem; font-weight:600;
-      cursor:pointer; transition:background 0.2s, transform 0.1s; white-space:nowrap;
-    }
+    button#analyzeBtn { padding:14px 24px; background:#4361ee; color:white; border:none;
+      border-radius:8px; font-size:0.9rem; font-weight:600; cursor:pointer; white-space:nowrap; }
     button#analyzeBtn:hover { background:#3451d1; }
-    button#analyzeBtn:active { transform:scale(0.97); }
-    #alertBanner {
-      display:none; width:100%; max-width:960px;
-      background:#fff3cd; border:1px solid #ffc107; border-radius:8px;
-      padding:10px 16px; font-size:0.85rem; color:#856404; margin-bottom:16px;
-    }
-    .plot-card {
-      background:white; border-radius:12px;
-      box-shadow:0 2px 12px rgba(0,0,0,0.08);
-      padding:20px 16px 8px; width:100%; max-width:960px; margin-bottom:20px;
-    }
-    #spePlot { width:100%; height:400px; }
+    .plot-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08);
+      padding:20px 16px 8px; width:100%; max-width:960px; margin-bottom:20px; }
+    #spePlot { width:100%; height:480px; }
     .hint { font-size:0.8rem; color:#888; text-align:center; margin-top:4px; margin-bottom:8px; }
-    .results-card {
-      background:white; border-radius:12px;
-      box-shadow:0 2px 12px rgba(0,0,0,0.08);
-      padding:20px 24px; width:100%; max-width:960px; margin-bottom:20px;
-    }
-    .results-card h2 { font-size:1rem; font-weight:700; margin-bottom:14px; color:#1a1a2e; }
+    #clickResult { display:none; background:#fff3f3; border:2px solid #e63946; border-radius:8px;
+      padding:10px 18px; font-size:0.88rem; color:#c1121f; font-weight:600; margin-top:10px; text-align:center; }
     table { width:100%; border-collapse:collapse; font-size:0.88rem; }
-    th {
-      text-align:left; padding:8px 12px; background:#f0f2f5;
-      font-weight:600; color:#444; border-bottom:2px solid #dde1e7;
-    }
+    th { text-align:left; padding:8px 12px; background:#f0f2f5; font-weight:600; color:#444; border-bottom:2px solid #dde1e7; }
     td { padding:8px 12px; border-bottom:1px solid #f0f2f5; }
     tr:last-child td { border-bottom:none; }
     .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px; vertical-align:middle; }
-    .bar-cell { min-width:120px; }
     .bar-bg { background:#eef0f3; border-radius:4px; height:10px; overflow:hidden; }
-    .bar-fill { height:100%; border-radius:4px; transition:width 0.5s ease; }
-    #clickResult {
-      display:none; background:#fff3f3; border:2px solid #e63946;
-      border-radius:8px; padding:10px 18px; font-size:0.88rem;
-      color:#c1121f; font-weight:600; margin-top:10px; text-align:center;
-    }
+    .bar-fill { height:100%; border-radius:4px; }
   </style>
 </head>
 <body>
-
 <header>
-  <h1>⚗️ Serum Protein Electrophoresis Analyser</h1>
-  <p>Paste a raw hexadecimal curve string, then click <strong>Analyse</strong>. Click anywhere on the curve to integrate ±3 points.</p>
+  <h1>&#9879;&#65039; Serum Protein Electrophoresis Analyser</h1>
+  <p>Paste a hexadecimal curve string, click <strong>Analyse</strong>, then click the curve to integrate &plusmn;3 points.</p>
 </header>
-
-<div class="upload-card">
-  <label for="hexInput">Hexadecimal curve string</label>
+<div class="card">
+  <label for="hexInput">Hexadecimal curve string
+    <span style="font-style:italic;color:#999;font-weight:400;font-size:0.82rem">(Daratumumab given as example)</span>
+  </label>
   <div class="hex-row">
-    <textarea id="hexInput" spellcheck="false" placeholder="Paste hex string here…"></textarea>
-    <button id="analyzeBtn" onclick="runAnalysis()">▶ Analyse</button>
+    <textarea id="hexInput" spellcheck="false" placeholder="Paste hex string here&hellip;"></textarea>
+    <button id="analyzeBtn" onclick="runAnalysis()">&#9654; Analyse</button>
   </div>
 </div>
-
-<div id="alertBanner"></div>
-
 <div class="plot-card">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <button id="toggleZonesBtn" onclick="toggleZones()"
+      style="padding:6px 16px;border:1.5px solid #4361ee;border-radius:6px;
+             background:white;color:#4361ee;font-size:0.82rem;font-weight:600;
+             cursor:pointer;transition:all 0.2s">
+      &#9635; Hide C/D/E zones
+    </button>
+  </div>
   <div id="spePlot"></div>
-  <p class="hint">🖱️ Click on the curve to compute a local ±3-point integral — highlighted in red</p>
+  <p class="hint">&#128432; Click on the curve to integrate &plusmn;3 points &mdash; highlighted in red</p>
   <div id="clickResult"></div>
 </div>
-
-<div class="results-card">
-  <h2>Fraction Summary</h2>
-  <table id="resultsTable">
-    <thead>
-      <tr>
-        <th>Fraction</th>
-        <th>Area (%)</th>
-        <th class="bar-cell">Relative</th>
-      </tr>
-    </thead>
-    <tbody id="resultsBody"></tbody>
-  </table>
+<div class="card" id="summaryCard" style="display:none">
+  <h2 style="font-size:1rem;font-weight:700;margin-bottom:14px">Fraction Summary</h2>
+  <table><thead><tr><th>Fraction</th><th>Area (%)</th><th style="min-width:120px">Relative</th></tr></thead>
+  <tbody id="resultsBody"></tbody></table>
 </div>
 
 <script>
-var FRACTION_NAMES = ["Albumin","Alpha-1 globulins","Alpha-2 globulins",
-                      "Beta-1 globulins","Beta-2 globulins","Gamma globulins"];
-var COLORS = ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A", "#19D3F3"];
+var FRACTION_NAMES = ["Albumin", "Alpha-1 globulins", "Alpha-2 globulins", "Beta-1 globulins", "Beta-2 globulins", "Gamma globulins"];
+var COLORS         = ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A", "#19D3F3"];
 var X_START = 45, X_END = 280;
+var currentSegments = [], currentY = null, currentTotal = 0;
 
-function decipherCurve(curva, threshLow, threshHigh) {
-  threshLow  = threshLow  || 10000;
-  threshHigh = threshHigh || 30000;
+function decipherCurve(curva) {
   var raw = curva.match(/.{4}/g) || [];
-  var s = raw.map(function(h){ return parseInt(h,16); });
+  var s   = raw.map(function(h){ return parseInt(h,16); });
   s.reverse();
   var delimIdx=[], delimSet=new Set();
-  for(var i=0;i<s.length;i++) if(s[i]>=threshLow){ delimIdx.push(i); delimSet.add(i); }
-  var nonDelim=[];
-  for(var i=0;i<s.length;i++) if(!delimSet.has(i)) nonDelim.push(i);
-  var values=[...s];
+  for(var i=0;i<s.length;i++) if(s[i]>=10000){delimIdx.push(i);delimSet.add(i);}
+  var nonDelim=[...s.keys()].filter(function(i){return !delimSet.has(i);});
+  var v=[...s];
   for(var d of delimIdx){
-    var before=nonDelim.filter(i=>i<d), after=nonDelim.filter(i=>i>=d);
-    if(!before.length)      values[d]=after.length?s[after[0]]:0;
-    else if(!after.length)  values[d]=s[before[before.length-1]];
-    else values[d]=Math.round((s[before[before.length-1]]+s[after[0]])/2);
+    var b=nonDelim.filter(function(i){return i<d;}),
+        a=nonDelim.filter(function(i){return i>=d;});
+    if(!b.length)      v[d]=a.length?s[a[0]]:0;
+    else if(!a.length) v[d]=s[b[b.length-1]];
+    else v[d]=Math.round((s[b[b.length-1]]+s[a[0]])/2);
   }
-  var delimValues=delimIdx.map(i=>s[i]);
-  var fractions=delimIdx.filter((_,k)=>delimValues[k]>=threshHigh);
-  return { curve:values, fractions_coords:fractions };
+  var dv=delimIdx.map(function(i){return s[i];});
+  return {curve:v, fractions:delimIdx.filter(function(_,k){return dv[k]>=30000;})};
 }
 
 function trapz(y,x){
@@ -148,145 +101,162 @@ function trapz(y,x){
   return a;
 }
 
-var currentY=null, currentTotal=0, currentSegments=[];
-
 function runAnalysis(){
-  var hexStr=document.getElementById('hexInput').value.trim();
-  if(!hexStr) return;
-  var result=decipherCurve(hexStr);
-  var fullY=result.curve;
-  var fullX=fullY.map((_,i)=>i);
-
-  // Crop to [X_START, X_END]
-  var y=fullY.slice(X_START, X_END+1);
-  var x=fullX.slice(X_START, X_END+1);
-  currentY=fullY; // keep full for click indexing
-
-  var fractions=result.fractions_coords.filter(f=>f>X_START && f<=X_END).sort((a,b)=>a-b);
-  currentTotal=trapz(y,x);
-
-  var boundaries=[X_START,...fractions,X_END+1];
-  var segments=[];
+  var hex=document.getElementById('hexInput').value.trim();
+  if(!hex) return;
+  var res=decipherCurve(hex);
+  var fullY=res.curve, fullX=[...fullY.keys()];
+  currentY=fullY;
+  var fracs=res.fractions.filter(function(f){return f>X_START&&f<=X_END;}).sort(function(a,b){return a-b;});
+  currentTotal=trapz(fullY.slice(X_START,X_END+1),fullX.slice(X_START,X_END+1));
+  var boundaries=[X_START].concat(fracs).concat([X_END+1]);
+  var segs=[];
   for(var i=0;i<boundaries.length-1;i++){
-    if(i>=FRACTION_NAMES.length) continue; // skip segment 7+
-    var sx=fullX.slice(boundaries[i],boundaries[i+1]);
-    var sy=fullY.slice(boundaries[i],boundaries[i+1]);
+    if(i>=FRACTION_NAMES.length) break;
+    var sx=fullX.slice(boundaries[i],boundaries[i+1]),
+        sy=fullY.slice(boundaries[i],boundaries[i+1]);
     if(!sx.length) continue;
-    var area=trapz(sy,sx);
-    segments.push({
-      name:FRACTION_NAMES[i],
-      x:sx, y:sy,
-      pct:(area/currentTotal*100).toFixed(1),
-      color:COLORS[i%COLORS.length]
-    });
+    segs.push({name:FRACTION_NAMES[i],x:sx,y:sy,
+               pct:(trapz(sy,sx)/currentTotal*100).toFixed(1),
+               color:COLORS[i%COLORS.length]});
   }
-  currentSegments=segments;
-  buildPlot(segments, fullY, fullX);
-  buildTable(segments);
+  currentSegments=segs;
+  buildPlot(segs,fullY,fullX);
+  buildTable(segs);
+  document.getElementById('summaryCard').style.display='block';
+  document.getElementById('clickResult').style.display='none';
 }
 
-function buildPlot(segments, fullY, fullX){
-  var traces=[];
+function hexToRgba(hex,a){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
 
-  for(var seg of segments){
-    // filled area
-    traces.push({
-      x:seg.x, y:seg.y, fill:'tozeroy',
-      fillcolor:seg.color+'33',
-      mode:'none', showlegend:false, hoverinfo:'skip', type:'scatter'
+function buildPlot(segs,fullY,fullX){
+  var traces=[];
+  for(var seg of segs){
+    traces.push({x:seg.x,y:seg.y,fill:'tozeroy',
+      fillcolor:hexToRgba(seg.color,0.18),
+      mode:'none',showlegend:false,hoverinfo:'skip',type:'scatter'});
+    traces.push({x:seg.x,y:seg.y,mode:'lines',
+      line:{color:seg.color,width:3},name:seg.name,
+      showlegend:false,type:'scatter',
+      hovertemplate:'<b>%{fullData.name}</b><br>Signal: %{y}<extra></extra>'});
+  }
+
+  // lastFracX = last fraction delimiter = max of seg.x[0] excluding first seg
+  var lastFracX=X_START;
+  for(var sg of segs){
+    if(sg.x[0]>X_START) lastFracX=Math.max(lastFracX,sg.x[0]);
+  }
+
+  // C / D / E coloured rectangles
+  var zFill=['rgba(220,0,0,0.25)','rgba(0,160,0,0.25)','rgba(200,150,0,0.25)'];
+  var zLine=['#CC0000','#006600','#A07000'];
+  var zLabel=['C','D','E'];
+  var shapes=[];
+  var initAnns=[];
+  for(var k=0;k<3;k++){
+    var zs=lastFracX+k*16;
+    var ze=zs+16;
+    shapes.push({
+      type:'rect',xref:'x',yref:'paper',
+      x0:zs,x1:ze,y0:0,y1:0.3,
+      fillcolor:zFill[k],
+      line:{width:1.5,color:zLine[k],dash:'dot'},
+      layer:'below'
     });
-    // coloured line
-    traces.push({
-      x:seg.x, y:seg.y, mode:'lines',
-      line:{color:seg.color,width:3},
-      name:seg.name, showlegend:false, type:'scatter',
-      hovertemplate:'<b>%{fullData.name}</b><br>Signal: %{y}<extra></extra>'
+    initAnns.push({
+      x:(zs+ze)/2,xref:'x',yref:'paper',y:0.25,
+      text:'<b>'+zLabel[k]+'</b>',
+      showarrow:false,
+      font:{size:15,color:zLine[k]},
+      bgcolor:'rgba(255,255,255,0.85)',
+      bordercolor:zLine[k],borderwidth:1,borderpad:4
     });
   }
 
   var layout={
     margin:{t:20,r:20,b:30,l:20},
-    xaxis:{
-      showgrid:false, zeroline:false,
-      showticklabels:false,       // no x-axis tick labels
-      title:{text:''},
-      range:[X_START, X_END]
-    },
+    xaxis:{showgrid:false,zeroline:false,showticklabels:false,
+           title:'',range:[X_START,lastFracX+60]},
     yaxis:{visible:false},
-    plot_bgcolor:'white',
-    paper_bgcolor:'white',
-    showlegend:false,
-    hovermode:'closest',
-    annotations:[]
+    plot_bgcolor:'white',paper_bgcolor:'white',
+    showlegend:false,hovermode:'closest',
+    shapes:shapes,
+    annotations:initAnns
   };
 
-  Plotly.newPlot('spePlot', traces, layout, {responsive:true, displayModeBar:false});
-
-  var div=document.getElementById('spePlot');
-  div.on('plotly_click', function(data){
-    handleClick(Math.round(data.points[0].x), fullY, fullX);
+  Plotly.newPlot('spePlot',traces,layout,{responsive:true,displayModeBar:false});
+  document.getElementById('spePlot').on('plotly_click',function(data){
+    handleClick(Math.round(data.points[0].x),fullY,fullX);
   });
 }
 
-function handleClick(xi, fullY, fullX){
-  var start=Math.max(X_START, xi-3);
-  var end  =Math.min(X_END,   xi+3);
-  var hx=fullX.slice(start,end+1);
-  var hy=fullY.slice(start,end+1);
-  var area=trapz(hy,hx);
-  var pct=(area/currentTotal*100).toFixed(2);
+var zonesVisible = true;
 
-  // Remove previous highlight
+function toggleZones(){
+  var div = document.getElementById('spePlot');
+  if(!div || !div.layout) return;
+  zonesVisible = !zonesVisible;
+  var btn = document.getElementById('toggleZonesBtn');
+
+  // toggle shapes visibility
+  var newShapes = (div.layout.shapes||[]).map(function(s){
+    return Object.assign({},s,{visible: zonesVisible});
+  });
+  // toggle zone annotations visibility (those without _click flag)
+  var newAnns = (div.layout.annotations||[]).map(function(a){
+    if(a._click) return a;
+    return Object.assign({},a,{visible: zonesVisible});
+  });
+
+  Plotly.relayout('spePlot',{shapes:newShapes, annotations:newAnns});
+  btn.textContent = zonesVisible ? '\u25A3 Hide C/D/E zones' : '\u25A1 Show C/D/E zones';
+  btn.style.background   = zonesVisible ? 'white' : '#4361ee';
+  btn.style.color        = zonesVisible ? '#4361ee' : 'white';
+}
+
+function handleClick(xi,fullY,fullX){
+  var start=Math.max(X_START,xi-3), end=Math.min(X_END,xi+3);
+  var hx=fullX.slice(start,end+1), hy=fullY.slice(start,end+1);
+  var pct=(trapz(hy,hx)/currentTotal*100).toFixed(2);
   var div=document.getElementById('spePlot');
   var base=currentSegments.length*2;
-  var toRemove=[];
-  for(var i=base;i<div.data.length;i++) toRemove.push(i);
-  if(toRemove.length) Plotly.deleteTraces('spePlot',toRemove);
-
-  // Remove previous click annotations
-  var anns=(div.layout.annotations||[]).filter(a=>!a._click);
-
-  // Red highlight trace
-  Plotly.addTraces('spePlot',{
-    x:hx, y:hy, fill:'tozeroy',
-    fillcolor:'rgba(230,57,70,0.35)',
-    line:{color:'#e63946',width:2.5},
-    mode:'lines', showlegend:false, hoverinfo:'skip', type:'scatter'
-  });
-
-  // Red annotation
-  var peakY=Math.max(...hy);
-  var peakX=hx[hy.indexOf(peakY)];
-  anns.push({
-    x:peakX, y:peakY,
-    text:'<b>∫±3pt : '+pct+'%</b>',
-    showarrow:true, arrowhead:3, arrowsize:1, arrowwidth:2,
-    arrowcolor:'#e63946', ax:30, ay:-50,
-    font:{size:13,color:'#c1121f',family:'Segoe UI'},
-    bgcolor:'#fff3f3', bordercolor:'#e63946',
-    borderwidth:2, borderpad:5, _click:true
-  });
+  var toRm=[]; for(var i=base;i<div.data.length;i++) toRm.push(i);
+  if(toRm.length) Plotly.deleteTraces('spePlot',toRm);
+  var anns=(div.layout.annotations||[]).filter(function(a){return !a._click;});
+  Plotly.addTraces('spePlot',{x:hx,y:hy,fill:'tozeroy',
+    fillcolor:'rgba(230,57,70,0.35)',line:{color:'#e63946',width:2.5},
+    mode:'lines',showlegend:false,hoverinfo:'skip',type:'scatter'});
+  var py=Math.max.apply(null,hy), px2=hx[hy.indexOf(py)];
+  anns.push({x:px2,y:py,
+    text:'<b>&#8747;&plusmn;3pt&nbsp;:&nbsp;'+pct+'%</b>',
+    showarrow:true,arrowhead:3,arrowsize:1,arrowwidth:2,
+    arrowcolor:'#e63946',ax:30,ay:-50,
+    font:{size:13,color:'#c1121f'},
+    bgcolor:'#fff3f3',bordercolor:'#e63946',borderwidth:2,borderpad:5,
+    _click:true});
   Plotly.relayout('spePlot',{annotations:anns});
-
   var badge=document.getElementById('clickResult');
   badge.style.display='block';
-  badge.innerHTML='🔴 Local integral (x = '+(xi-3)+' → '+(xi+3)+') : <span style="font-size:1.1em">'+pct+'%</span> of total area';
+  badge.innerHTML='&#128308; Local integral (x&nbsp;=&nbsp;'+start+'&nbsp;&rarr;&nbsp;'+end+') : <span style="font-size:1.1em">'+pct+'%</span> of total area';
 }
 
-function buildTable(segments){
+function buildTable(segs){
   var tbody=document.getElementById('resultsBody');
   tbody.innerHTML='';
-  for(var seg of segments){
+  for(var seg of segs){
     var tr=document.createElement('tr');
     tr.innerHTML='<td><span class="dot" style="background:'+seg.color+'"></span>'+seg.name+'</td>'+
       '<td><b>'+seg.pct+'%</b></td>'+
-      '<td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+seg.pct+'%;background:'+seg.color+'"></div></div></td>';
+      '<td><div class="bar-bg"><div class="bar-fill" style="width:'+seg.pct+'%;background:'+seg.color+'"></div></div></td>';
     tbody.appendChild(tr);
   }
 }
 
 window.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('hexInput').value="80050005000400040002000200010001000100000000000000000000000000000000000100010002000200020004000500060009000B000D00110015001A002000260030003B00470052005D00680073007E00870091009C00A700B200BC00C600CE00D500DC00DF00E900F400FD01040106010500FF00F500EE00E500DE00D400CA00C100B500AB00A00095008A0080007900738071007A0087009800A800B500BD00C000BB00B000A30097008B0081007A0074006E0066005E0057805400580063007E00A800E401210156017D01880175014F012200F300C600A5008E007C007000660060005D005A805A005B005D005F00630068006D0073007B0084008C009600A000A700B000B700C000CC00DC00F2010B0125013E015301620168016201560144012D011200F400D300B20094007A006500580051004D004C004C004A0049004880470048004C005300600074008B00A200B800C600CA00C400B5009D0085006E00590048003C0032002C00270023001E001C001B001A001880170018001C001E00230027002C0033003900440052006B009800E201530204032004DF076F0A730D240F140FFF0FBD0E560C2B09E607FA066105160413035002BF024E01F401AB01700140011700F400D300B6009D00850070005E004D003E00310026001E001A001600140012001200120011001100100010000F000F00100011001400160018001D002000210020001E001C001A00160012000F000D000B000A00090009000700070006000600060005000500050004000400020002000100010001000000000000000000000000000000000000000000008000";
+  document.getElementById('hexInput').value='80000000000000000000000000000000000000000000000000000000000000000000000100010002000400070009000D00100016001C0025002F003B00490059006B007D009000A200B600CE00F201280165019201AD01B701A801880164014C0140013901350131012C012801250120011D01180111010A010000F500E800DC00D000C500BB00B100A900A000990093008F808D0091009600A200BC00E701170139014C014E0138011000E900CD00BC00B200AA009F00930088007E8079007C008900A600DC011801510181019C019B017E0150011B00EA00C200A2008B007C007000660060005B00580056805600560057005A005E00610066006D00760081008F009F00B100C600DA00EC00FE010D011C012A013901480151015701580154014C01430139012C011D010B00F500DD00C300AD009D0093008C008700810079006E00600053004A80490055006E009200BB00E000FA010100F600DE00C200A50090007F0072006B0065005F00590054004C0043003D00360033803100320035003C0042004E005B006A007A008C00A400C500F6014301BC027003950555079D0A230C870E830FB90FFF0F6B0E430CC10B0D0948078D060704D103E9033D02BA024F01F801B001760148012000FC00DD00C100A60091007E006E00610056004C0042003A003100280021001A001600120010000F000E000D000D000C000D000D000E001000140018001B002000230024002400220020001B001800170015001200110010000F000F000E000D000C000C000B000B000A00090008000800070007000700070007000700050005000500050005000400048004';
   runAnalysis();
 });
 </script>
