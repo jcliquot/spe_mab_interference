@@ -1,32 +1,40 @@
-# Serum Protein Electrophoresis Curve Decoder
+# ⚗️ Serum Protein Electrophoresis Analyser
 
-A lightweight Python utility to decode, validate, and visualise raw hexadecimal
-capillary electrophoresis (SPE) curves produced by compatible analysers.
+[![Open Web App](https://img.shields.io/badge/Open%20Web%20App-4361ee?style=for-the-badge&logo=googlechrome&logoColor=white)](https://jcliquot.github.io/serum-electrophoresis-decoder/spe_webapp.html)
+
+> **Scientific reference** — *Article link to be added*
+
+> 📄 [Publication — *Characterization of the migration profile of 36 Therapeutic Monoclonal Antibodies in Serum Protein Electrophoresis and Immunofixation*](#)
+
+---
+
+A lightweight Python/JavaScript toolkit to decode, validate, and visualise raw hexadecimal capillary electrophoresis (SPE) curves produced by compatible analysers.
 
 ## Features
 
-- **Hex decoding** – converts 4-character grouped hex strings to integer signal arrays
-- **Quality flags** – bitmask alerts for missing values, artefact jumps, and wide delimiter gaps
-- **Fraction interpolation** – replaces delimiter sample points with neighbour-averaged values
-- **Visualisation** – clean matplotlib plot with optional coloured interpretation zones (C / D / E)
+- **Hex decoding** — converts 4-character grouped hex strings to integer signal arrays
+- **Quality flags** — bitmask alerts for missing values, artefact jumps, and wide delimiter gaps
+- **Fraction interpolation** — replaces delimiter sample points with neighbour-averaged values
+- **Interactive web app** — colour-coded fractions, ±3-point click integration, C/D/E zone toggle
+- **Google Colab notebook** — slider-based integration with live Matplotlib rendering
 - **SVG + PNG export**
 
-## Requirements
+## Repository structure
 
 ```
-numpy
-matplotlib
-scipy  # optional – used for peak detection extensions
+├── spe_webapp.html        # Standalone interactive web app (no server needed)
+├── serum_electrophoresis.py   # Core Python module
+├── server.py              # Optional Flask backend for Matplotlib PNG rendering
+├── README.md
+└── LICENSE
 ```
 
-Install dependencies:
+## Quick start
 
-```bash
-pip install numpy matplotlib scipy
-```
+### Web app (no installation)
+Download `spe_webapp.html` and open it in any browser — or use the badge above if GitHub Pages is enabled.
 
-## Usage
-
+### Python module
 ```python
 from serum_electrophoresis import decipher_curve, plot_curve
 
@@ -34,7 +42,29 @@ result = decipher_curve(curva_hex_string)
 plot_curve(result, output_path="my_curve.svg")
 ```
 
-### `decipher_curve` return value
+### Flask server (optional — enables Matplotlib PNG in the web app)
+```bash
+pip install flask matplotlib numpy
+python server.py
+# → open http://localhost:5000
+```
+
+## Requirements
+
+```
+numpy
+matplotlib
+scipy      # optional — for peak detection extensions
+flask      # optional — only for server.py
+plotly
+```
+
+Install all at once:
+```bash
+pip install numpy matplotlib scipy flask plotly
+```
+
+## `decipher_curve` return value
 
 | Key | Type | Description |
 |-----|------|-------------|
@@ -66,8 +96,8 @@ Index 6 → Gamma globulins
 
 ## Interpretation zones
 
-After the Beta-2 globulins delimitation, three 16-point coloured rectangles (C=red, D=green, E=yellow)
-are overlaid on the plot to highlight post-beta migration zones.
+After the Beta-2 globulins delimitation, three 16-point coloured rectangles (C = red, D = green, E = yellow)
+are overlaid on the plot to highlight post-beta migration zones. They can be toggled on/off via the **Hide/Show C/D/E zones** button in the web app.
 
 ## License
 
