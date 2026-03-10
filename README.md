@@ -1,6 +1,6 @@
 # ⚗️ Serum Protein Electrophoresis Analyser
 
-[![Open Web App](https://img.shields.io/badge/Open%20Web%20App-4361ee?style=for-the-badge&logo=googlechrome&logoColor=white)](https://jcliquot.github.io/spe_mab_interference/spe_webapp.html)
+[![Open Web App](https://img.shields.io/badge/Open%20Web%20App-%234361ee?style=for-the-badge&logo=html5&logoColor=white)](https://jcliquot.github.io/serum-electrophoresis-decoder/spe_webapp.html)
 
 > **Scientific reference** — *Article link to be added*
 
