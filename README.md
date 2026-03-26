@@ -33,7 +33,6 @@ A lightweight Python/JavaScript toolkit to decode, validate, and visualise raw h
 - **Quality flags** — bitmask alerts for missing values, artefact jumps, and wide delimiter gaps
 - **Fraction interpolation** — replaces delimiter sample points with neighbour-averaged values
 - **Interactive web app** — colour-coded fractions, ±3-point click integration, C/D/E zone toggle
-- **Google Colab notebook** — slider-based integration with live Matplotlib rendering
 - **SVG + PNG export**
 
 ## Repository structure
@@ -58,26 +57,16 @@ result = decipher_curve(curva_hex_string)
 plot_curve(result, output_path="my_curve.svg")
 ```
 
-### Flask server (optional — enables Matplotlib PNG in the web app)
-```bash
-pip install flask matplotlib numpy
-python server.py
-# → open http://localhost:5000
-```
-
 ## Requirements
 
 ```
 numpy
 matplotlib
-scipy      # optional — for peak detection extensions
-flask      # optional — only for server.py
-plotly
 ```
 
 Install all at once:
 ```bash
-pip install numpy matplotlib scipy flask plotly
+pip install numpy matplotlib plotly
 ```
 
 ## `decipher_curve` return value
