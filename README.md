@@ -5,7 +5,7 @@
 > **Scientific reference** — *Article link to be added*
 
 > 📄 [Publication — *Characterization of the migration profile of 36 Therapeutic Monoclonal Antibodies in Serum Protein Electrophoresis and Immunofixation*](#)
-[![DOI](https://zenodo.org/badge/1175841762.svg)](https://doi.org/10.5281/zenodo.20553066)
+
 ---
 # Abstract
 ## Background
@@ -107,3 +107,7 @@ are overlaid on the plot to highlight post-beta migration zones. They can be tog
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
+
+## DOI
+
+[![DOI](https://zenodo.org/badge/1175841762.svg)](https://doi.org/10.5281/zenodo.20553066)
